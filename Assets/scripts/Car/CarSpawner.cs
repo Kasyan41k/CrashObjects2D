@@ -14,15 +14,16 @@ public class CarSpawner : MonoBehaviour
     private float _latencyForSpawnCars;
 
     public List<GameObject> _carsInScene = new List<GameObject>();
+    private GameObject _barrierInScene;
 
     private Vector3 _zoneSpawn;
     private int _countCarsForSpawn = 0;
-
 
     private void Start()
     {
         _zoneSpawn = new Vector3(_road.transform.position.x - _road.transform.localScale.x / 2 - _beforeRoadDistance,
                      _carPrefab.transform.position.y, _carPrefab.transform.position.z);
+        _barrierInScene = gameObject.GetComponent<BarrierSpawner>().GetBarrierInScene();
     }
 
     private void Update()

@@ -10,28 +10,28 @@ public class CarController : MonoBehaviour
     private float _zoneReaction = 2f;
     [SerializeField]
     private float _slowingDownSpeed = 15f;
-
-    private List<GameObject> _carsInScene;
-    private float _carSize;
     [SerializeField]
-    private float Speed;
+    private float _speed;
+
+    private List<GameObject> _carsInScene = new List<GameObject>();
+
+    private GameObject _barrier;
+    private float _carSize;
     private float _counter = 0f;
     private bool _needToStop = false;
     private bool _needToSpeedUp = false;
 
-
     private void Start()
     {
         _carSize = gameObject.transform.localScale.x;
-        Speed = StartSpeed;
+        _speed = StartSpeed;
     }
 
     private void FixedUpdate()
     {
         if (_counter < 0.2f && _needToStop)
         {
-            _counter += Time.fixedDeltaTime;
-            
+            _counter += Time.fixedDeltaTime;           
         }
         else
         {
@@ -39,7 +39,7 @@ public class CarController : MonoBehaviour
         }
 
         Vector2 currentPosition = gameObject.transform.position;
-        currentPosition.x += Speed * 0.05f / (1f / Time.fixedDeltaTime);
+        currentPosition.x += _speed * 0.05f / (1f / Time.fixedDeltaTime);
         gameObject.transform.position = currentPosition;
     }
 
@@ -47,14 +47,14 @@ public class CarController : MonoBehaviour
     {
         foreach (var otherCar in _carsInScene)
         {
-            if (CarNeedStopInFrontOfTheOtherCar(otherCar))
+            if (CarNeedStopInFrontOfTheOtherCar(otherCar) || CarNeedStopInFrontOfTheBarrier(_barrier))
             {
                 _needToStop = true;
                 break;
             }
             else
             {
-                if (Speed == 0)
+                if (_speed == 0)
                 {
                     _needToStop = false;
                     Debug.Log($"{_counter}");
@@ -63,9 +63,6 @@ public class CarController : MonoBehaviour
                 }
             }
         }
-
-        
-
     }
 
     private void SlowAndSpeedUp()
@@ -74,27 +71,27 @@ public class CarController : MonoBehaviour
 
         if (_needToStop)
         {
-            if (Speed - slowingDownSpeed <= 0)
+            if (_speed - slowingDownSpeed <= 0)
             {
-                Speed = 0;
+                _speed = 0;
             }
             else
             {
-                Speed -= slowingDownSpeed;
+                _speed -= slowingDownSpeed;
             }
         }
         else if (_needToSpeedUp)
         {
-            if (Speed + slowingDownSpeed >= StartSpeed)
+            if (_speed + slowingDownSpeed >= StartSpeed)
             {
-                Speed = StartSpeed;
+                _speed = StartSpeed;
 
             }
             else
             {
-                Speed += slowingDownSpeed;
+                _speed += slowingDownSpeed;
             }
-            if (Speed + slowingDownSpeed == StartSpeed)
+            if (_speed + slowingDownSpeed == StartSpeed)
             {
                 _needToSpeedUp = false;
             }
@@ -106,21 +103,21 @@ public class CarController : MonoBehaviour
         Vector2 carPosition = gameObject.transform.position;
         Vector2 otherCarPosition = otherCar.transform.position;
 
-        float positionCarWithZoneReaction = carPosition.x + _carSize + _zoneReaction;
-
-        //return positionCarWithZoneReaction >= otherCarPosition.x - _carSize / 2 &&
-        //        positionCarWithZoneReaction <= otherCarPosition.x + _carSize;
-        //return carPosition.x + _carSize / 2 + _zoneReaction >= otherCarPosition.x - _carSize / 2 &&
-        //       carPosition.x + _carSize / 2 + _zoneReaction <= otherCarPosition.x + _carSize / 2;
-
         return carPosition.x + _carSize / 2 <= otherCarPosition.x - _carSize / 2 &&
                carPosition.x + _carSize / 2 + _zoneReaction >= otherCarPosition.x - _carSize / 2;
     }
 
-    //
-    private bool CarNeedStopInFrontOfTheBarrier(GameObject otherCar)
+    private bool CarNeedStopInFrontOfTheBarrier(GameObject barrier)
     {
-        return true;
+        if (barrier == null)
+            return false;
+
+        Vector2 carPosition = gameObject.transform.position;
+        Vector2 barrierPosition = barrier.transform.position;
+        float barrierSize = barrier.transform.localScale.x;
+
+        return carPosition.x + _carSize / 2 <= barrierPosition.x - barrierSize / 2 &&
+               carPosition.x + _carSize / 2 + _zoneReaction >= barrierPosition.x - barrierSize / 2;
     }
 
     public void TakeCarsInScene(List<GameObject> carsInScene)
@@ -128,45 +125,8 @@ public class CarController : MonoBehaviour
         _carsInScene = carsInScene;
     }
 
-    // дальше треш который не используется
-    private IEnumerator WaitReaction()
+    public void TakeBarrierInScene(GameObject barrier)
     {
-        yield return new WaitForSeconds(0.2f);
-    }
-
-    private IEnumerator Slow()
-    {
-        if (_needToStop)
-        {
-            if (Speed - _slowingDownSpeed <= 0)
-            {
-                Speed = 0;
-            }
-            else
-            {
-                Speed -= _slowingDownSpeed;
-                yield return new WaitForSeconds(1f);
-                StartCoroutine(Slow());
-            }
-        }
-    }
-
-
-    private IEnumerator SpeedUp()
-    {
-        if (_needToSpeedUp)
-        {
-            if (Speed + _slowingDownSpeed >= StartSpeed)
-            {
-                Speed = StartSpeed;
-                _needToSpeedUp = false;
-            }
-            else
-            {
-                Speed += StartSpeed;
-                yield return new WaitForSeconds(0.5f);
-                StartCoroutine(SpeedUp());
-            }
-        }
+        _barrier = barrier;
     }
 }
