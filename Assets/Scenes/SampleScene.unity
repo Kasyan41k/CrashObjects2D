@@ -177,6 +177,7 @@ GameObject:
   - component: {fileID: 255281428}
   - component: {fileID: 255281429}
   - component: {fileID: 255281430}
+  - component: {fileID: 255281427}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -184,6 +185,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &255281427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255281426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efafe7d3c4b98184e8987369f04ddfe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _road: {fileID: 1849485014}
 --- !u!4 &255281428
 Transform:
   m_ObjectHideFlags: 0
@@ -226,7 +240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _road: {fileID: 1849485014}
   _carPrefab: {fileID: 6482883490274034623, guid: 13518c074edc55747a3c1e0485e9eb01, type: 3}
-  _beforeRoadDistance: 5
+  _beforeRoadDistance: 0
   _latencyForSpawnCars: 4
   _carsInScene: []
 --- !u!1 &519420028
@@ -560,7 +574,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1401033022
 MonoBehaviour:
   m_ObjectHideFlags: 0

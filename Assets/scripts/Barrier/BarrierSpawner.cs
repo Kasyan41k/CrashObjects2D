@@ -20,21 +20,16 @@ public class BarrierSpawner : MonoBehaviour
     private void Start()
     {
         _carsInScene = gameObject.GetComponent<CarSpawner>().GetCarsInScene();
+        StartCoroutine(Spawn());
     }
 
-    private void Update()
+    private IEnumerator Spawn()
     {
-        Spawn();
-    }
-
-    public void Spawn()
-    {
-        if (_carsInScene == null || _barrierInScene != null)
-            return;
+        yield return new WaitForSeconds(5f);
 
         foreach (var car in _carsInScene)
         {
-            if (Random.Range(1,11) > 5)
+            if (Random.Range(1, 11) > 5)
             {
                 Vector3 spawnPosition = new Vector3(car.transform.position.x + _distanceAfterCar,
                                                     car.transform.position.y,
@@ -44,19 +39,17 @@ public class BarrierSpawner : MonoBehaviour
 
                 UpdateCarsInfoByBarrier();
 
-                StartCoroutine(StartRemoveBarrier());
                 break;
             }
         }
-    }
 
-    private IEnumerator StartRemoveBarrier()
-    {
         yield return new WaitForSeconds(5f);
 
         Destroy(_barrierInScene);
 
         _barrierInScene = null;
+
+        StartCoroutine(Spawn());
     }
 
     private void UpdateCarsInfoByBarrier()
@@ -66,4 +59,6 @@ public class BarrierSpawner : MonoBehaviour
             car.GetComponent<CarController>().TakeBarrierInScene(_barrierInScene);
         }
     }
+
+  
 }
