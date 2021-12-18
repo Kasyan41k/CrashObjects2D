@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8ddc2aac7aefd4286923197db1bd45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startSpeed: 90
-  _zoneReaction: 11
-  _slowingDownSpeed: 25
+  _startSpeed: 200
+  _zoneReaction: 8
+  _slowingDownSpeed: 200
   _speed: 0

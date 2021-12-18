@@ -41,31 +41,31 @@ public class CarController : MonoBehaviour
 
         foreach (var otherCar in _carsInScene)
         {
-            if (gameObject == otherCar)
-                continue;
-
-            if (CarIsCrashedInOtherCar(otherCar))
-            { 
-                otherCar.GetComponent<CarController>().SetDeleteState();
-                SetDeleteState();
-                break;
-            } 
-            if(CarIsCrashedInBarrier())
+            if (gameObject != otherCar)
+            {
+                if (CarIsCrashedInOtherCar(otherCar))
+                {
+                    otherCar.GetComponent<CarController>().SetDeleteState();
+                    SetDeleteState();
+                    break;
+                }
+                if (CarNeedStopInFrontOfTheOtherCar(otherCar) || CarNeedStopInFrontOfTheBarrier())
+                {
+                    if (!_needToStop) StartCoroutine(Slowing());
+                    break;
+                }
+            }            
+            if (CarIsCrashedInBarrier())
             {
                 SetDeleteState();
                 break;
-            }
-            if (CarNeedStopInFrontOfTheOtherCar(otherCar) || CarNeedStopInFrontOfTheBarrier())
-            {                
-                if (!_needToStop) StartCoroutine(Slowing());
-                break;
-            }
+            }          
             else
             {
                 if (_speed == 0)
                 {
                     _needToStop = false;
-                    if(!_needToSpeedUp) StartCoroutine(SpeedUp());
+                    if (!_needToSpeedUp) StartCoroutine(SpeedUp());
                 }
             }
         }
@@ -111,14 +111,14 @@ public class CarController : MonoBehaviour
         Vector2 barrierPosition = _barrier.transform.position;
         float barrierSize = _barrier.transform.localScale.x;
 
-        return carPosition.x + _carSize / 2 < barrierPosition.x - barrierSize / 2 &&
+        return carPosition.x + _carSize / 2 <= barrierPosition.x - barrierSize / 2 &&
                carPosition.x + _carSize / 2 + _zoneReaction >= barrierPosition.x - barrierSize / 2;
     }
 
     public void SetDeleteState()
     {
         _startSpeed = 0;
-        _speed = 0;       
+        _speed = 0;
         _needDeleteCar = true;
         StartCoroutine(DeleteCar());
     }
@@ -164,6 +164,7 @@ public class CarController : MonoBehaviour
             if (_speed - slowingDownSpeed <= 0)
             {
                 _speed = 0;
+                _needToStop = false;
             }
             else
             {
